@@ -52,7 +52,7 @@ def main(_):
             loss = tf.square(Y - tf.multiply(X, w) - b)
 
             global_step = tf.Variable(0).minimize(loss, global_step=global_step)
-            train_op = tf.train.AdagradOptimizer(0.1)
+            train_op = tf.train.AdagradOptimizer(0.1).minimize(loss, global_step=global_step)
             #train_op = tf.train.AdagradOptimizer(0.1)
             #train_op = tf.train.SyncReplicasOptimizer(train_op, 
             #                                          replicas_to_aggregate=len(workers), 
