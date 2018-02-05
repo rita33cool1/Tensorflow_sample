@@ -53,12 +53,6 @@ def main(_):
 
             global_step = tf.Variable(0).minimize(loss, global_step=global_step)
             train_op = tf.train.AdagradOptimizer(0.1).minimize(loss, global_step=global_step)
-            #train_op = tf.train.AdagradOptimizer(0.1)
-            #train_op = tf.train.SyncReplicasOptimizer(train_op, 
-            #                                          replicas_to_aggregate=len(workers), 
-            #                                          total_num_replicas=len(workers),
-            #                                          use_locking=True
-            #                                         ).minimize(loss, global_step=global_step)
             saver = tf.train.Saver()
             summary_op = tf.summary.merge_all()
             init_op = tf.global_variables_initializer()
