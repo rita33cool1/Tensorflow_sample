@@ -37,8 +37,8 @@ elif FLAGS.job_name == "worker":
     cluster=cluster)):
 
     # count the number of updates
-    global_step = tf.get_variable('global_step', [], 
-                                initializer = tf.constant_initializer(0), 
+    global_step = tf.get_variable('global_step', [],
+                                initializer = tf.constant_initializer(0),
                                 trainable = False)
 
     # input images
@@ -86,7 +86,7 @@ elif FLAGS.job_name == "worker":
       train_op = rep_op.minimize(cross_entropy, global_step=global_step)
       '''
       train_op = grad_op.minimize(cross_entropy, global_step=global_step)
-      
+
     '''
     init_token_op = rep_op.get_init_tokens_op()
     chief_queue_runner = rep_op.get_chief_queue_runner()
@@ -98,11 +98,11 @@ elif FLAGS.job_name == "worker":
       accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     # create a summary for our cost and accuracy
-    tf.scalar_summary("cost", cross_entropy)
-    tf.scalar_summary("accuracy", accuracy)
+    tf.summary.scalar("cost", cross_entropy)
+    tf.summary.scalar("accuracy", accuracy)
 
     # merge all summaries into a single "operation" which we can execute in a session 
-    summary_op = tf.merge_all_summaries()
+    summary_op = tf.contrib.deprecated.merge_all_summaries()
     init_op = tf.initialize_all_variables()
     print("Variables initialized ...")
 
@@ -120,8 +120,8 @@ elif FLAGS.job_name == "worker":
       sess.run(init_token_op)
     '''
     # create log writer object (this will log on every machine)
-    writer = tf.train.SummaryWriter(logs_path, graph=tf.get_default_graph())
-        
+    writer = tf.summary.FileWriter(logs_path, graph=tf.get_default_graph())
+
     # perform training cycles
     start_time = time.time()
     for epoch in range(training_epochs):
@@ -132,10 +132,10 @@ elif FLAGS.job_name == "worker":
       count = 0
       for i in range(batch_count):
         batch_x, batch_y = mnist.train.next_batch(batch_size)
-        
+
         # perform the operations we defined earlier on batch
         _, cost, summary, step = sess.run(
-                        [train_op, cross_entropy, summary_op, global_step], 
+                        [train_op, cross_entropy, summary_op, global_step],
                         feed_dict={x: batch_x, y_: batch_y})
         writer.add_summary(summary, step)
 
@@ -143,10 +143,10 @@ elif FLAGS.job_name == "worker":
         if count % frequency == 0 or i+1 == batch_count:
           elapsed_time = time.time() - start_time
           start_time = time.time()
-          print("Step: %d," % (step+1), 
-                " Epoch: %2d," % (epoch+1), 
-                " Batch: %3d of %3d," % (i+1, batch_count), 
-                " Cost: %.4f," % cost, 
+          print("Step: %d," % (step+1),
+                " Epoch: %2d," % (epoch+1),
+                " Batch: %3d of %3d," % (i+1, batch_count),
+                " Cost: %.4f," % cost,
                 " AvgTime: %3.2fms" % float(elapsed_time*1000/frequency))
           count = 0
 
@@ -155,4 +155,4 @@ elif FLAGS.job_name == "worker":
     print("Final Cost: %.4f" % cost)
 
   sv.stop()
-  print("done")
+  print("done") 
