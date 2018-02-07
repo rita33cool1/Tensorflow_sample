@@ -51,8 +51,8 @@ def main(_):
             # 損失函式，用於描述模型預測值與真實值的差距大小，常見為`均方差(Mean Squared Error)`
             loss = tf.square(Y - tf.multiply(X, w) - b)
 
-            global_step = tf.Variable(0).minimize(loss, global_step=global_step)
-            train_op = tf.train.AdagradOptimizer(0.1).minimize(loss, global_step=global_step)
+            global_step = tf.Variable(0)
+            train_op = tf.train.AdagradOptimizer(0.01).minimize(loss, global_step=global_step)
             saver = tf.train.Saver()
             summary_op = tf.summary.merge_all()
             init_op = tf.global_variables_initializer()
@@ -68,19 +68,20 @@ def main(_):
 
         with sv.managed_session(server.target) as sess:
             loss_value = 100
+            turn = 1
             while not sv.should_stop() and loss_value > 70.0:
                 # 執行一個非同步 training 步驟.
                 # 若要執行同步可利用`tf.train.SyncReplicasOptimizer` 來進行
                 for (x, y) in zip(train_X, train_Y):
                     _, step = sess.run([train_op, global_step],
                                        feed_dict={X: x, Y: y})
-                    print(", loss: {}".format(step, loss_value))
-                    print("train_X, trainY: ", train_X, trainY)
+                    print("步驟: {}".format(step))
+                    print("Feed: ", x, y)
                 loss_value = sess.run(loss, feed_dict={X: x, Y: y})
-                #print("步驟: {}, loss: {}".format(step, loss_value))
-
+                print("------輪: {}, loss: {}------".format(turn, loss_value))
+                turn += 1
         sv.stop()
 
 
 if __name__ == "__main__":
-tf.app.run()
+    tf.app.run()
