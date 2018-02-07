@@ -77,9 +77,7 @@ def main(_):
 
                 loss_value = sess.run(loss, feed_dict={X: x, Y: y})
                 print("步驟: {}, loss: {}".format(step, loss_value))
-
         sv.stop()
-
-
+        
 if __name__ == "__main__":
     tf.app.run()
