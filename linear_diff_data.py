@@ -139,7 +139,7 @@ def main(_):
                 if ( FLAGS.task_index == 0 ):
                     train_X = train_X1
                     train_Y = train_Y1
-                else: 
+                elif ( FLAGS.task_index == 1 ):
                     train_X = train_X2
                     train_Y = train_Y2
                     
